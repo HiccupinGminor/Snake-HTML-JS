@@ -14,15 +14,19 @@ $(document).ready(function($) {
 	Game = {
 		over: false,
 		paused: false,
+		atStart: true,
 		score: 0,
 		scoreIncrement: 10,
-		fps: 6,
+		fps: 10,
 		font: '32px Silkscreen',
 		fontColor: '#FFFFFF',
 
-		start: function(){
+		init: function(){
 			Snake.init();
 			Game.writeScore();
+		},
+		start: function(){
+			Game.atStart = false;
 		},
 		end: function(){
 			Game.over = true;
@@ -236,31 +240,37 @@ $(document).ready(function($) {
 		ctx.fill();
 		ctx.closePath();
 	}	
+	
 	addEventListener('keydown', function(e){
-		e.preventDefault();
 		var key = e.keyCode;
+		if(key == 38 || key == 87 || key == 40 || key == 283){
+			e.preventDefault();
+		}
 		Snake.changeDirection(key);
 	});
 
 	//Adjust requestAnimationFrame compatibility
 	window.requestAnimFrame = (function(){
 		return  window.requestAnimationFrame   ||
-	    	window.webkitRequestAnimationFrame ||
-	        window.mozRequestAnimationFrame    ||
-	        function( callback ){
-	        	window.setTimeout(callback, 1000 / 60);
-	        };
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame    ||
+			function( callback ){
+				window.setTimeout(callback, 1000 / 60);
+			};
 	})();
 
-	Game.start();
+	Game.init();
 	function gameLoop(){
 		if(!Game.over && !Game.paused){
 			Canvas.draw();
-			Snake.move();
-			Apple.draw();
-			setTimeout(function(){
-				requestAnimFrame(gameLoop);
-			}, 1000 / Game.fps);
+			if(!Game.atStart){
+				Snake.move();
+				Apple.draw();
+
+				setTimeout(function(){
+					requestAnimFrame(gameLoop);
+				}, 1000 / Game.fps);
+			}
 		}		
 	}
 	requestAnimFrame(gameLoop);
@@ -268,8 +278,13 @@ $(document).ready(function($) {
 	$('#pause').click(function(){
 		Game.pause();
 	});
-	
 	$('#new-game').click(function(){
-		location.reload();
+		if(Game.atStart){
+			Game.start();
+			gameLoop();
+		}
+		else{
+			location.reload();
+		}
 	});
 });
