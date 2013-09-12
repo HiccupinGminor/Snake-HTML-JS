@@ -142,17 +142,24 @@ $(document).ready(function($) {
 
 			var newHead = [];
 			//If the snake has run into a border, draw the snake on the opposite side of the canvas
-			if(Snake.segments[0][0] + Snake.size >= canvas.width){
-				newHead[0] = Snake.segments[0][0] -= (canvas.width);	
+			if(Snake.segments[0][0] + Snake.size > canvas.width){
+				Game.end();
+				Game.over = true;	
 			}
 			if(Snake.segments[0][0] < 0){
-				newHead[0] = Snake.segments[0][0] += (canvas.width);
+				//newHead[0] = Snake.segments[0][0] += (canvas.width);
+				Game.end();
+				Game.over = true;
 			}
-			if(Snake.segments[0][1] >= canvas.height){
-				newHead[1] = Snake.segments[0][1] -= (canvas.height);
+			if(Snake.segments[0][1] + Snake.size > canvas.height){
+				//newHead[1] = Snake.segments[0][1] -= (canvas.height);
+				Game.end();
+				Game.over = true;
 			}
 			if(Snake.segments[0][1] < 0){
-				newHead[1] = Snake.segments[0][1] += (canvas.height);
+				//newHead[1] = Snake.segments[0][1] += (canvas.height);
+				Game.end();
+				Game.over = true;
 			}
 			switch(Snake.direction){
 				case 'left':
@@ -168,7 +175,6 @@ $(document).ready(function($) {
 					newHead = [Snake.segments[0][0], (Snake.segments[0][1] + Snake.size)];
 					break;
 			}
-
 
 			//Add the new head, remove the tail 
 			Snake.segments.unshift(newHead);
@@ -278,13 +284,13 @@ $(document).ready(function($) {
 	$('#pause').click(function(){
 		Game.pause();
 	});
-	$('#new-game').click(function(){
+	$('#start').click(function(){
 		if(Game.atStart){
 			Game.start();
 			gameLoop();
-		}
-		else{
-			location.reload();
-		}
+		}		
+	})
+	$('#new-game').click(function(){
+		location.reload();
 	});
 });
